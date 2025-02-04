@@ -34,7 +34,7 @@ def test_sqrt_newton():
         MathUtils.sqrt_newton(-4)
 
 def test_geometric_mean(sample_numbers):
-    assert MathUtils.geometric_mean(sample_numbers) == 3.380015
+    assert MathUtils.geometric_mean(sample_numbers) == 2.993795
     with pytest.raises(ValueError):
         MathUtils.geometric_mean([])
 

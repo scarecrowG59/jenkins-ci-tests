@@ -48,6 +48,8 @@ class MathUtils:
         """Вычисляет среднее геометрическое списка чисел."""
         if not numbers:
             raise ValueError("Cannot compute geometric mean of an empty list")
+        if any(n <= 0 for n in numbers):  # Проверяем, что нет отрицательных чисел и нулей
+            raise ValueError("Geometric mean is only defined for positive numbers")
+        
         product = math.prod(numbers)
         return round(product ** (1 / len(numbers)), 6)
-

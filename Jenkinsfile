@@ -27,7 +27,95 @@ pipeline {
                 }
             }
         }
+	
+	// Java step
 
+	stage('Setup Java Environment') {
+            steps {
+                script {
+                    sh 'echo "Setting up Java environment..."'
+                }
+            }
+        }
+
+	stage('Build Java Project') {
+            steps {
+                script {
+                    sh '''
+                    cd src/main/java/com/example
+                    javac App.java
+                    '''
+                }
+            }
+        }
+
+	stage('Run Java Tests') {
+            steps {
+                script {
+                    sh '''
+                    cd ~/jenkins-ci-tests
+                    mvn test
+                    '''
+                }
+            }
+        }
+
+        stage('Code Coverage (JaCoCo)') {
+            steps {
+                script {
+                    sh '''
+                    cd ~/jenkins-ci-tests
+                    mvn jacoco:report
+                    '''
+                }
+            }
+        }
+
+        stage('Package JAR') {
+            steps {
+                script {
+                    sh '''
+                    cd ~/jenkins-ci-tests
+                    mvn package
+                    '''
+                }
+            }
+        }
+
+	// Docker stage
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh '''
+                    docker build -t my-java-app:latest .
+                    '''
+                }
+            }
+        }
+	stage('Run Docker Container') {
+	    steps {
+	        script {
+	            sh '''
+	            docker run --rm my-java-app:latest
+	            '''
+	        }
+	    }
+	}
+	
+	stage('Push to Docker Hub') {
+	    steps {
+	        script {
+	            withCredentials([usernamePassword(credentialsId: 'jenkins-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+	                sh '''
+	                docker login -u $DOCKER_USER -p $DOCKER_PASS
+	                docker tag my-java-app:latest zackops/jenkins-docked:latest
+	                docker push zackops/jenkins-docked:latest
+	                '''
+	            }
+	        }
+	    }
+	}
         // 🚀 Новый этап для SonarQube
         stage('SonarQube Analysis') {
             environment {

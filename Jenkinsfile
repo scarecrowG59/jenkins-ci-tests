@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    cd src/main/java/com/example
+                    cd src
                     javac App.java
                     '''
                 }

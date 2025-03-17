@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-		    cd "$WORKSPACE"
+		    cd "/var/lib/jenkins/workspace/first run"
                     mvn test
                     '''
                 }
@@ -64,7 +64,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    cd "$WORKSPACE"
+                    cd "/var/lib/jenkins/workspace/first run"
                     mvn jacoco:report
                     '''
                 }
@@ -75,7 +75,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    cd ~/jenkins-ci-tests
+                    cd "/var/lib/jenkins/workspace/first run"
                     mvn package
                     '''
                 }

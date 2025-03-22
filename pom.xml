@@ -28,7 +28,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <!-- Компилятор Java -->
             <plugin>

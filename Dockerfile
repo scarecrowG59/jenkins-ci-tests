@@ -2,9 +2,9 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY src /app/src
+COPY . /app
 
-RUN mkdir /app/bin && javac /app/src/main/java/com/example/App.java -d /app/bin
+RUN ./mvnw clean package
 
-CMD ["java", "-cp", "/app/bin", "com.example.App"]
+CMD ["java", "-jar, "target/my-java-app-1.0-SNAPSHOT.jar"]
 

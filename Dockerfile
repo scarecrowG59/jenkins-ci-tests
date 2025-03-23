@@ -1,11 +1,10 @@
 # 🚧 Build Stage
-FROM maven:3.8.8-eclipse-temurin-17 AS builder
-WORKDIR /build
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
+WORKDIR /app
 COPY . .
 RUN mvn clean package
 
-# 🚀 Runtime Stage
-FROM eclipse-temurin:17-jdk
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=builder /build/target/my-java-app-1.0-SNAPSHOT.jar /app/
-CMD ["java", "-jar", "/app/my-java-app-1.0-SNAPSHOT.jar"]
+COPY --from=builder /app/target/my-java-app-1.0-SNAPSHOT.jar app.jar
+CMD ["java", "-jar", "app.jar"]

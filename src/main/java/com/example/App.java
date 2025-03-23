@@ -1,13 +1,12 @@
 package com.example;
 
-import org.junit.jupiter.api.Test;
+public class App {
+    public static int add(int a, int b) {
+        return a + b;
+    }
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class AppTest {
-    @Test
-    public void testMain() {
-        assertEquals(1, 1); // Пример теста
+    public static void main(String[] args) {
+        System.out.println("App running");
     }
 }
 

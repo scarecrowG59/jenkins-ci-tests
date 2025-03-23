@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY . /app
 
-RUN ./mvnw clean package
+RUN apt update && apt install -y maven
+
+RUN mvn clean package
 
 CMD ["java", "-jar, "target/my-java-app-1.0-SNAPSHOT.jar"]
 

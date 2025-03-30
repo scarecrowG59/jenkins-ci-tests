@@ -106,7 +106,7 @@ pipeline {
                         -Dsonar.projectKey=jenkins-ci-tests \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://165.232.130.101:9000/ \
-                        -Dsonar.login=$SONAR_TOKEN \
+			-Dsonar.java.binaries=target/classes \
                         -Dsonar.python.version=3.10 \
                         -Dsonar.qualitygate.wait=true
                     '''

@@ -104,7 +104,8 @@ pipeline {
                     sh '''
                     ${SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=jenkins-ci-tests \
-                        -Dsonar.sources=. \
+                        -Dsonar.sources=src/main/java,python_project
+			-Dsonar.exclusions=**/target/site/jacoco/**/*.html
                         -Dsonar.host.url=http://165.232.130.101:9000/ \
 			-Dsonar.java.binaries=target/classes \
                         -Dsonar.python.version=3.10 \

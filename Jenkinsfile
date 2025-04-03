@@ -123,7 +123,19 @@ pipeline {
                 }
             }
         }
-    }
+
+	stage('Deploy to Kubernetes') {
+	    steps {
+	        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+	            sh '''
+	            kubectl apply -f k8s/deployment.yaml
+	            kubectl apply -f k8s/service.yaml
+	            '''
+	        }
+	    }
+	}
+     }
+
 
     // 🧾 Post test report
     post {

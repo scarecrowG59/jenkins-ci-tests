@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-ci-app
+  labels:
+    app: jenkins-ci-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-ci-app
+  template:
+    metadata:
+      labels:
+        app: java-ci-app
+    spec:
+      containers:
+        - name: java-ci-container
+          image: zackops/jenkins-docked:latest
+          ports:
+            - containerPort: 8080

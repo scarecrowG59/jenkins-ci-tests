@@ -58,7 +58,7 @@ pipeline {
         stage('Package JAR') {
             steps {
                 sh '''
-                mvn package
+                mvn clean package
                 '''
             }
         }

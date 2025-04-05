@@ -2,22 +2,24 @@ pipeline {
     agent any
 
     stages {
-        // 🧾 Git clone
+        //  Clone the repository
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/scarecrowG59/jenkins-ci-tests.git'
             }
         }
 
-        // 🐍 Python ENV
-        stage('Setup Environment') {
+        // Python Environment Setup
+        stage('Setup Python Environment') {
             steps {
-                sh 'pip3 install --upgrade pip'
-                sh 'pip3 install pytest'
+                sh '''
+                pip3 install --upgrade pip
+                pip3 install pytest
+                '''
             }
         }
 
-        // 🧪 Python Tests
+        //  Run Python Unit Tests
         stage('Run Python Tests') {
             steps {
                 sh '''
@@ -27,61 +29,42 @@ pipeline {
             }
         }
 
-        // ☕ Java Compile (Maven)
+        // Java Compile
         stage('Build Java Project') {
             steps {
-                sh '''
-                mvn clean compile
-                '''
+                sh 'mvn clean compile'
             }
         }
 
-        // ☕ Java Test (JUnit + JaCoCo)
+        //  Java Tests (JUnit + JaCoCo)
         stage('Run Java Tests') {
             steps {
-                sh '''
-                mvn test
-                '''
+                sh 'mvn test'
             }
         }
 
-        // 📊 JaCoCo Coverage
+        // JaCoCo Coverage Report
         stage('Code Coverage (JaCoCo)') {
             steps {
-                sh '''
-                mvn jacoco:report
-                '''
+                sh 'mvn jacoco:report'
             }
         }
 
-        // 📦 Package JAR
+        // Package JAR
         stage('Package JAR') {
             steps {
-                sh '''
-                mvn clean package
-                '''
+                sh 'mvn clean package'
             }
         }
 
-        // 🐳 Docker build
+        // Build Docker Image
         stage('Build Docker Image') {
             steps {
-                sh '''
-                docker build -t my-java-app:latest .
-                '''
+                sh 'docker build -t my-java-app:latest .'
             }
         }
 
-        // ▶️ Run Docker
-        stage('Run Docker Container') {
-            steps {
-                sh '''
-                docker run --rm my-java-app:latest
-                '''
-            }
-        }
-
-        // ☁️ Push Docker
+        // ush Docker Image to Docker Hub
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'jenkins-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -94,20 +77,29 @@ pipeline {
             }
         }
 
-        // 🔍 SonarQube
+        // Trivy Security Scan
+        stage('Trivy Security Scan') {
+            steps {
+                sh '''
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL zackops/jenkins-docked:latest
+                '''
+            }
+        }
+
+        // SonarQube Analysis
         stage('SonarQube Analysis') {
             environment {
                 SCANNER_HOME = tool 'SonarScanner'
             }
             steps {
-                withSonarQubeEnv(installationName: 'Sonar') {
+                withSonarQubeEnv('Sonar') {
                     sh '''
                     ${SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=jenkins-ci-tests \
                         -Dsonar.sources=src/main/java,python_project \
-			-Dsonar.exclusions=**/target/site/jacoco/**/*.html \
+                        -Dsonar.exclusions=**/target/site/jacoco/**/*.html \
                         -Dsonar.host.url=http://165.232.130.101:9000/ \
-			-Dsonar.java.binaries=target/classes \
+                        -Dsonar.java.binaries=target/classes \
                         -Dsonar.python.version=3.10 \
                         -Dsonar.qualitygate.wait=true
                     '''
@@ -115,7 +107,7 @@ pipeline {
             }
         }
 
-        // ✅ Quality Gate
+        //  Quality Gate (block pipeline if fail)
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
@@ -124,20 +116,19 @@ pipeline {
             }
         }
 
-	stage('Deploy to Kubernetes') {
-	    steps {
-	        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-	            sh '''
-	            kubectl apply -f k8s/deployment.yaml
-	            kubectl apply -f k8s/service.yaml
-	            '''
-	        }
-	    }
-	}
-     }
+        // eploy to Kubernetes (Only with proper kubeconfig)
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                    '''
+                }
+            }
+        }
+    }
 
-
-    // 🧾 Post test report
     post {
         always {
             script {

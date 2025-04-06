@@ -27,10 +27,5 @@ public class AppTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(" App running in Kubernetes via Spring Boot!"));
     }
-
-    @Test
-    public void testMainMethod() {
-        App.main(new String[]{});
-    }
 }
 

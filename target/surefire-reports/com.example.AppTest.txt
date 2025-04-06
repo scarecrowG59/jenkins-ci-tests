@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
 Test set: com.example.AppTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.294 s - in com.example.AppTest
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 52.633 s <<< FAILURE! - in com.example.AppTest
+com.example.AppTest.testMainMethod  Time elapsed: 13.679 s  <<< ERROR!
+org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+	at com.example.AppTest.testMainMethod(AppTest.java:33)
+Caused by: org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+	at com.example.AppTest.testMainMethod(AppTest.java:33)
+Caused by: java.lang.IllegalArgumentException: standardService.connector.startFailed
+	at com.example.AppTest.testMainMethod(AppTest.java:33)
+Caused by: org.apache.catalina.LifecycleException: Protocol handler start failed
+	at com.example.AppTest.testMainMethod(AppTest.java:33)
+Caused by: java.net.BindException: Address already in use
+	at com.example.AppTest.testMainMethod(AppTest.java:33)
+

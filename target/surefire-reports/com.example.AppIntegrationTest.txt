@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.AppIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.371 s - in com.example.AppIntegrationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 29.257 s - in com.example.AppIntegrationTest

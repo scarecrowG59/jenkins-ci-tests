@@ -1,3 +1,4 @@
 /root/jenkins-ci-tests/src/test/java/com/example/AppIntegrationTest.java
+/root/jenkins-ci-tests/src/test/java/com/example/AppUnitTest.java
 /root/jenkins-ci-tests/src/test/java/com/example/AppMainTest.java
 /root/jenkins-ci-tests/src/test/java/com/example/AppTest.java

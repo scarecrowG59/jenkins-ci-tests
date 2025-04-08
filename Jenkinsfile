@@ -125,7 +125,8 @@ pipeline {
 		sh 'kubectl get pods -o wide'
 	    }
 	}
-
+    }
+	
     post {
         always {
             script {

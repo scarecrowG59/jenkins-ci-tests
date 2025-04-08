@@ -119,17 +119,12 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh '''
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
-                    '''
-                }
-            }
-        }
-    }
+	stage('Deploy to Kubernetes') {
+	    steps {
+	        sh 'kubectl apply -f k8s/deployment.yaml'
+		sh 'kubectl get pods -o wide'
+	    }
+	}
 
     post {
         always {

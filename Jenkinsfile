@@ -129,24 +129,30 @@ pipeline {
     }
 	
     post {
-        always {
-            script {
-                if (fileExists('python_project/pytest-report.xml')) {
-                    junit 'python_project/pytest-report.xml'
-                }
-                if (fileExists('target/surefire-reports')) {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-            echo '🧹 Cleanup: removing Docker image to save space.'
-            sh 'docker rmi ${IMAGE_NAME} || true'
-        }
-        success {
-            echo '✅ Build completed successfully!'
-        }
-        failure {
-            echo '❌ Build failed!'
-        }
+       always {
+	        script {
+	            if (fileExists('python_project/pytest-report.xml')) {
+	                junit 'python_project/pytest-report.xml'
+	            }
+	            if (fileExists('target/surefire-reports')) {
+	                junit 'target/surefire-reports/*.xml'
+	            }
+	        }
+	        echo '🧹 Cleanup: removing Docker image to save space.'
+	        sh 'docker rmi ${IMAGE_NAME} || true'
+	    }
+	    success {
+	        echo '✅ Build completed successfully!'
+	        sh """
+	            curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ Build SUCCESSFUL for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' https://hooks.slack.com/services/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
+	        """
+	    }
+	    failure {
+	        echo '❌ Build failed!'
+	        sh """
+	            curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ Build FAILED for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' https://hooks.slack.com/services/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
+	        """
+       }
     }
 }
 

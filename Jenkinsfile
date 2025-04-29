@@ -141,18 +141,25 @@ pipeline {
 	        echo '🧹 Cleanup: removing Docker image to save space.'
 	        sh 'docker rmi ${IMAGE_NAME} || true'
 	    }
-	    success {
-	        echo '✅ Build completed successfully!'
-	        sh """
-	            curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ Build SUCCESSFUL for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' https://hooks.slack.com/services/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
-	        """
-	    }
+	    
 	    failure {
-	        echo '❌ Build failed!'
-	        sh """
-	            curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ Build FAILED for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' https://hooks.slack.com/services/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
-	        """
-       }
+		withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+		    sh """
+		      curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ Build FAILED for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' $SLACK_WEBHOOK
+		    """
+		}
+	    echo '❌ Build failed!'
+	    }
+
+	    success {
+                withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+		    sh """
+		      curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ Build SUCCESS for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' $SLACK_WEBHOOK
+		    """
+	        }
+		echo '✅ Build succeeded!'
+	    }
+
     }
 }
 

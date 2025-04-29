@@ -128,8 +128,8 @@ pipeline {
 	 }
     }
 	
-    post {
-       always {
+	post {
+	    always {
 	        script {
 	            if (fileExists('python_project/pytest-report.xml')) {
 	                junit 'python_project/pytest-report.xml'
@@ -141,25 +141,31 @@ pipeline {
 	        echo '🧹 Cleanup: removing Docker image to save space.'
 	        sh 'docker rmi ${IMAGE_NAME} || true'
 	    }
-	    
-	    failure {
-		withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
-		    sh """
-		      curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ Build FAILED for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' $SLACK_WEBHOOK
-		    """
-		}
-	    echo '❌ Build failed!'
-	    }
 
 	    success {
-                withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
-		    sh """
-		      curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ Build SUCCESS for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"}' $SLACK_WEBHOOK
-		    """
+	        script {
+	            def msg = "✅ Build SUCCESS for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+	            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+	                sh """
+	                    curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${msg}\"}' "\$SLACK_WEBHOOK"
+	                """
+	            }
+	            echo msg
 	        }
-		echo '✅ Build succeeded!'
 	    }
 
-    }
+	    failure {
+	        script {
+	            def msg = "❌ Build FAILED for project: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+	            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+	                sh """
+	                    curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${msg}\"}' "\$SLACK_WEBHOOK"
+	                """
+	            }
+	            echo msg
+	        }
+	    }
+	}
+
 }
 
